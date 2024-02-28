@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        go '1.17.0' // Update to a specific Go version
+        go '1.22.0'
     }
     stages {
         stage('Build') {
