@@ -17,19 +17,11 @@ pipeline {
                 sh 'go test'
             }
         }
-        // stage('Deploy/Run') {
-        //     steps {
-        //         sh 'nohup go run main.go 2>&1 &'
-        //         sh 'sleep 10' // Wait for 10 seconds
-        //     }
-        // }
         stage('Deploy/Run') {
-    steps {
-        sh 'go build -o myapp main.go' // Build the application
-        sh './myapp &' // Run the compiled binary in the background
-        sh 'sleep 10' // Wait for 10 seconds
-    }
-}
-
+            steps {
+                sh 'nohup go run main.go 2>&1 &'
+                sh 'sleep 20' // Wait for 10 seconds
+            }
+        }
     }
 }
