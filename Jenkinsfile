@@ -20,6 +20,7 @@ pipeline {
         stage('Deploy/Run') {
             steps {
                 sh 'nohup go run main.go 2>&1 &'
+                sh 'sleep 10' // Wait for 10 seconds
             }
         }
     }
