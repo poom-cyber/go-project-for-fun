@@ -14,6 +14,7 @@ type album struct {
     Price  float64 `json:"price"`
 }
 
+
 // albums slice to seed record album data.
 var albums = []album{
     {ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
