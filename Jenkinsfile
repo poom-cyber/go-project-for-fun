@@ -6,8 +6,16 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                echo 'hi boiii'
+                echo 'build app'
                 sh 'go version'
+                sh 'go build main.go'
+            }
+        }
+        stage('Unit Testing') {
+            steps {
+                echo 'Unit testing '
+                sh 'go version'
+                sh 'go test'
             }
         }
     }
