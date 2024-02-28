@@ -4,28 +4,22 @@ pipeline {
         go '1.22.0'
     }
     stages {
-        stage('Build') {
+        stage('build') {
             steps {
-                echo 'Building the Go application'
-                dir('main.go') {
-                    sh 'go build main.go'
-                }
+                echo 'build app'
+                sh 'go version'
+                sh 'go build main.go'
             }
         }
         stage('Unit Testing') {
             steps {
-                echo 'Running unit tests'
-                dir('main_test.go') {
-                    sh 'go test'
-                }
+                echo 'Unit testing '
+                sh 'go test'
             }
         }
         stage('Deploy/Run') {
             steps {
-                echo 'Deploying and running the Go application'
-                dir('main.go') {
-                    sh 'nohup ./main 2>&1 &'
-                }
+                sh 'nohup go run main.go 2>&1 &'
             }
         }
     }
