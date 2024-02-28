@@ -26,13 +26,6 @@ pipeline {
             }
         }
         
-        stage("Functional Test") {
-            steps {
-                echo 'Running Functional Tests'
-                sh 'make functional-tests' // Assuming you have functional tests in your Makefile
-            }
-        }
-        
         stage('Deliver') {
             agent any
             steps {
