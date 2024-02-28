@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Deploy/Run') {
             steps {
-                sh 'go run main.go'
+                sh 'nohup go run main.go 2>&1 &'
             }
         }
     }
