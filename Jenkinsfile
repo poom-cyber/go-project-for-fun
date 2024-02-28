@@ -8,6 +8,7 @@ pipeline {
             steps {
                 echo 'hi boiii'
                 sh 'go version'
+                
             }
         }
     }
