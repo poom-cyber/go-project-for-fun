@@ -14,8 +14,12 @@ pipeline {
         stage('Unit Testing') {
             steps {
                 echo 'Unit testing '
-                sh 'go version'
                 sh 'go test'
+            }
+        }
+        stage('Deploy/Run') {
+            steps {
+                sh 'go run main.go'
             }
         }
     }
