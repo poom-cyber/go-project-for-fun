@@ -1,27 +1,55 @@
 pipeline {
     agent any
+    
     tools {
-        go '1.22.0'
+        go 'go1.14'
     }
+    
+    environment {
+        GO114MODULE = 'on'
+        CGO_ENABLED = 0 
+        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
+    }
+    
     stages {
-        stage('build') {
+        stage("Unit Test") {
             steps {
-                echo 'build app'
-                sh 'go version'
-                sh 'go build main.go'
-            }
-        }
-        stage('Unit Testing') {
-            steps {
-                echo 'Unit testing '
+                echo 'Running Unit Tests'
                 sh 'go test'
             }
         }
-        stage('Deploy/Run') {
+        
+        stage("Build") {
             steps {
-                sh 'nohup go run main.go 2>&1 &'
-                sh 'sleep 20' // Wait for 10 seconds
+                echo 'Building Go Application'
+                sh 'go build -o main'
             }
+        }
+        
+        stage("Functional Test") {
+            steps {
+                echo 'Running Functional Tests'
+                sh 'make functional-tests' // Assuming you have functional tests in your Makefile
+            }
+        }
+        
+        stage('Deliver') {
+            agent any
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerhubPassword', usernameVariable: 'dockerhubUser')]) {
+                        sh "docker login -u ${env.dockerhubUser} -p ${env.dockerhubPassword}"
+                        sh 'docker build . -t shadowshotx/product-go-micro'
+                        sh 'docker push shadowshotx/product-go-micro'
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs() // Clean up workspace
         }
     }
 }
