@@ -1,11 +1,8 @@
 package main
 
-package main
-
 import (
-    "log"
     "net/http"
-
+    "log"
     "github.com/gin-gonic/gin"
 )
 
