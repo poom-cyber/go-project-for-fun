@@ -1,26 +1,37 @@
 pipeline {
     agent any
-    tools {
-        go '1.22.0'
-    }
+
     stages {
-        stage('build') {
+        stage('Build Docker Image') {
             steps {
-                echo 'build app'
-                sh 'go version'
-                sh 'go build main.go'
+                script {
+                    docker.build('my-go-app', '-f Dockerfile .')
+                }
             }
         }
-        stage('Unit Testing') {
+
+        stage('Run Docker Container') {
             steps {
-                echo 'Unit testing '
-                sh 'go test'
+                script {
+                    docker.image('my-go-app').run('-p 8090:8090 -d my-go-app')
+                }
             }
         }
-        stage('Deploy/Run') {
+
+        stage('Verify Deployment') {
             steps {
-                sh 'nohup go run main.go 2>&1 &'
-                sh 'sleep 10' // Wait for 10 seconds
+                script {
+                    sh 'curl http://localhost:8090/albums'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                docker.image('my-go-app').stop()
+                docker.image('my-go-app').remove()
             }
         }
     }
