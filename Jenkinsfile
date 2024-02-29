@@ -5,7 +5,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build('my-go-app', '-f Dockerfile .')
+                    // Build Docker image
+                    sh 'docker build -t my-go-app .'
                 }
             }
         }
@@ -13,7 +14,8 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    docker.image('my-go-app').run('-p 8090:8090 -d my-go-app')
+                    // Run Docker container
+                    sh 'docker run -d -p 8070:8070 --name my-go-container my-go-app'
                 }
             }
         }
@@ -21,7 +23,8 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    sh 'curl http://localhost:8090/albums'
+                    // Perform a test by sending a request to the container
+                    sh 'curl http://localhost:8070/albums'
                 }
             }
         }
@@ -30,8 +33,12 @@ pipeline {
     post {
         always {
             script {
-                docker.image('my-go-app').stop()
-                docker.image('my-go-app').remove()
+                // Stop and remove the Docker container
+                sh 'docker stop my-go-container'
+                sh 'docker rm my-go-container'
+                
+                // Remove the Docker image
+                sh 'docker rmi my-go-app'
             }
         }
     }

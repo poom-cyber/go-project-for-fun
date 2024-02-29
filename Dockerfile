@@ -25,8 +25,8 @@ WORKDIR /root/
 # Copy the compiled Go application from the build image
 COPY --from=build /app/myapp .
 
-# Expose port 8090 to the outside world
-EXPOSE 8090
+# Expose port 8070 to the outside world
+EXPOSE 8070
 
 # Command to run the executable
 CMD ["./myapp"]
