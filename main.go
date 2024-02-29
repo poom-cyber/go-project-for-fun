@@ -21,6 +21,7 @@ func Output(w http.ResponseWriter, r *http.Request) {
     fmt.Fprint(w, "Random number: ", randomNumbers())
 }
 
+
 func randomNumbers() int {
     return rand.Intn(1000)
 }
