@@ -1,54 +1,32 @@
 pipeline {
     agent any
 
-    tools {
-        go '1.22.0'
-    }
-
     stages {
-        stage('Check Environment') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    if (isRunningInsideDocker()) {
-                        echo 'Running inside a Docker container'
-                        // Perform actions specific to Docker environment
-                    } else {
-                        echo 'Not running inside a Docker container'
-                        // Perform actions specific to non-Docker environment
-                    }
+                    // Build Docker image for the Go application
+                    docker.build('my-go-app', '-f Dockerfile .')
                 }
             }
         }
-        stage('Build') {
-            steps {
-                sh 'pwd'
-                sh 'ls -l'
-                echo 'Building the Go application'
-                sh 'go build -o goservice main.go'
-            }
-        }
 
-        stage('Unit Testing') {
+        stage('Run Docker Container') {
             steps {
-                sh 'pwd'
-                echo 'Running unit tests'
-                sh 'ls -l'
-                sh 'go test'
-            }
-        }
-
-        stage('Deploy/Run') {
-            steps {
-                sh 'pwd'
-                sh 'ls -l'
-                echo 'Starting the Go application from host side'
-                sh 'nohup go run main.go > output.log 2>&1 &'
+                script {
+                    // Run Docker container from the built image
+                    docker.image('my-go-app').run('--name my-go-container -d')
+                }
             }
         }
     }
-}
 
-def isRunningInsideDocker() {
-    // Check if the HOSTNAME environment variable is set
-    return env.HOSTNAME != null
+    post {
+        always {
+            // Cleanup: Stop and remove the Docker container after pipeline execution
+            cleanWs()
+            sh 'docker stop my-go-container'
+            sh 'docker rm my-go-container'
+        }
+    }
 }
