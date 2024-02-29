@@ -31,10 +31,4 @@ pipeline {
 
         // Add more stages as needed for testing, deployment, etc.
     }
-
-    post {
-        always {
-            // Clean up resources if necessary
-        }
-    }
 }
