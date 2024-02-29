@@ -13,7 +13,7 @@ func main() {
     router.HandleFunc("/", Output)
     
     // Start the HTTP server
-    log.Fatal(http.ListenAndServe(":8070", router))
+    log.Fatal(http.ListenAndServe("0.0.0.0:8070", router))
 }
 
 func Output(w http.ResponseWriter, r *http.Request) {
