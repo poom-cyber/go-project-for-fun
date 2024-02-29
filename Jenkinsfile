@@ -2,31 +2,18 @@ pipeline {
     agent any
 
     stages {
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                script {
-                    // Build Docker image for the Go application
-                    docker.build('my-go-app', '-f Dockerfile .')
-                }
+                echo 'Building the Go application'
+                sh 'go build -o goservice main.go'
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Deploy/Run') {
             steps {
-                script {
-                    // Run Docker container from the built image
-                    docker.image('my-go-app').run('--name my-go-container -d')
-                }
+                echo 'Starting the Go application'
+                sh './goservice &'
             }
-        }
-    }
-
-    post {
-        always {
-            // Cleanup: Stop and remove the Docker container after pipeline execution
-            cleanWs()
-            sh 'docker stop my-go-container'
-            sh 'docker rm my-go-container'
         }
     }
 }
