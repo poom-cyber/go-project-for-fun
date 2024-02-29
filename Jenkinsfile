@@ -23,9 +23,8 @@ pipeline {
         stage('Deploy/Run') {
             steps {
                 echo 'Starting the Go application from host side'
-                sh 'go run .'
+                sh 'nohup go run main.go > output.log 2>&1 &'
             }
         }
     }
-    
 }
