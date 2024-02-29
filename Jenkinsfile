@@ -1,27 +1,40 @@
 pipeline {
     agent any
-    tools {
-        go '1.22.0'
+
+    environment {
+        // Define the path to your Go workspace
+        GOPATH = '/path/to/your/go/workspace'
+        // Define the relative path to your Go source code directory from the workspace root
+        GO_SRC_PATH = 'src'
     }
+
     stages {
-        stage('build') {
+        stage('Build Go App') {
             steps {
-                echo 'build app'
-                sh 'go version'
-                sh 'go build main.go'
+                // Change directory to the Go source code directory
+                dir("${GOPATH}/${GO_SRC_PATH}") {
+                    // Build the Go application
+                    sh 'go build -o myapp'
+                }
             }
         }
-        stage('Unit Testing') {
+
+        stage('Run Go App') {
             steps {
-                echo 'Unit testing '
-                sh 'go test'
+                // Change directory to the Go source code directory
+                dir("${GOPATH}/${GO_SRC_PATH}") {
+                    // Run the Go application as a background service
+                    sh 'nohup ./myapp -port=8070 &'
+                }
             }
         }
-        stage('Deploy/Run') {
-            steps {
-                sh 'nohup go run main.go 2>&1 &'
-                sh 'sleep 10' // Wait for 10 seconds
-            }
+
+        // Add more stages as needed for testing, deployment, etc.
+    }
+
+    post {
+        always {
+            // Clean up resources if necessary
         }
     }
 }
