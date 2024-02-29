@@ -9,7 +9,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the Go application'
-                sh 'go build -o goapp main.go'
+                sh 'go build main.go'
             }
         }
 
@@ -23,7 +23,8 @@ pipeline {
         stage('Deploy/Run') {
             steps {
                 echo 'Starting the Go application'
-                sh './main &'
+                //sh './main &'
+                sh 'nohup go run main.go 2>&1 &'
             }
         }
     }
