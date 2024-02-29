@@ -6,6 +6,19 @@ pipeline {
     }
 
     stages {
+        stage('Check Environment') {
+            steps {
+                script {
+                    if (isRunningInsideDocker()) {
+                        echo 'Running inside a Docker container'
+                        // Perform actions specific to Docker environment
+                    } else {
+                        echo 'Not running inside a Docker container'
+                        // Perform actions specific to non-Docker environment
+                    }
+                }
+            }
+        }
         stage('Build') {
             steps {
                 sh 'pwd'
@@ -33,4 +46,9 @@ pipeline {
             }
         }
     }
+}
+
+def isRunningInsideDocker() {
+    // Check if the HOSTNAME environment variable is set
+    return env.HOSTNAME != null
 }
