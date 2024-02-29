@@ -1,25 +1,29 @@
 pipeline {
     agent any
+
     tools {
         go '1.22.0'
     }
+
     stages {
-        stage('build') {
+        stage('Build') {
             steps {
-                echo 'build app'
-                sh 'go version'
-                sh 'go build main.go'
+                echo 'Building the Go application'
+                sh 'go build -o main main.go'
             }
         }
+
         stage('Unit Testing') {
             steps {
-                echo 'Unit testing '
+                echo 'Running unit tests'
                 sh 'go test'
             }
         }
+
         stage('Deploy/Run') {
             steps {
-                sh 'nohup go run main.go 2>&1 &'
+                echo 'Starting the Go application'
+                sh './main &'
             }
         }
     }
