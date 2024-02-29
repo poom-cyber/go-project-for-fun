@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                sh 'pwd'
                 echo 'Building the Go application'
                 sh 'go build -o goservice main.go'
             }
@@ -15,6 +16,7 @@ pipeline {
 
         stage('Unit Testing') {
             steps {
+                sh 'pwd'
                 echo 'Running unit tests'
                 sh 'go test'
             }
@@ -22,6 +24,7 @@ pipeline {
 
         stage('Deploy/Run') {
             steps {
+                sh 'pwd'
                 echo 'Starting the Go application from host side'
                 sh 'nohup go run main.go > output.log 2>&1 &'
             }
