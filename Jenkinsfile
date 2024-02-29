@@ -23,7 +23,7 @@ pipeline {
         stage('Deploy/Run') {
             steps {
                 echo 'Starting the Go application from host side'
-                sh 'nohup /var/jenkins_home/workspace/poc3/main.go 2>&1 &'
+                sh 'go run .'
             }
         }
     }
