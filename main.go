@@ -38,6 +38,7 @@ func getAlbums(c *gin.Context) {
 }
 
 
+
 // postAlbums adds an album from JSON received in the request body.
 func postAlbums(c *gin.Context) {
     var newAlbum album
