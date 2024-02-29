@@ -29,7 +29,14 @@ func main() {
     router.GET("/albums/:id", getAlbumByID)
     router.POST("/albums", postAlbums)
 
-    router.Run(":8070")
+    // Manually create and configure the HTTP server
+    server := &http.Server{
+        Addr:    ":8070", // Bind to port 8070
+        Handler: router,
+    }
+
+    // Start the HTTP server
+    log.Fatal(server.ListenAndServe())
 }
 
 // getAlbums responds with the list of all albums as JSON.
