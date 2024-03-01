@@ -19,6 +19,7 @@ pipeline {
                 }
             }
         }
+
         stage('Build') {
             steps {
                 sh 'pwd'
@@ -42,7 +43,32 @@ pipeline {
                 sh 'pwd'
                 sh 'ls -l'
                 echo 'Starting the Go application from host side'
-                sh 'nohup go run main.go > output.log 2>&1 &'
+
+                // Create systemd service file
+                writeFile file: '/etc/systemd/system/goapp.service', text: '''
+[Unit]
+Description=Go Application
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/var/jenkins_home/workspace/poc3/goservice
+WorkingDirectory=/var/jenkins_home/workspace/poc3
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+'''
+
+                // Reload systemd
+                sh 'sudo systemctl daemon-reload'
+
+                // Start and enable the service
+                sh 'sudo systemctl start goapp'
+                sh 'sudo systemctl enable goapp'
+
+                // Check service status
+                sh 'sudo systemctl status goapp'
             }
         }
     }
