@@ -20,6 +20,8 @@ func Output(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
     fmt.Fprint(w, "Random number: ", randomNumbers())
     fmt.Fprint(w, "Random number: ", randomNumbers())
+    fmt.Fprint(w, "Random number: ", randomNumbers())
+
 }
 
 
