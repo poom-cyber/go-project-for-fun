@@ -40,21 +40,22 @@ pipeline {
         stage('Deploy/Run') {
     steps {
         script {
-            def port = 8070 // Specify the port your Go application should use
-
+            def port = 8070
+            
             // Check if the port is already in use
-            try {
-                def portInUse = sh(script: "netstat -tuln | grep ${port}", returnStatus: true).status == 0
+            def portInUse = sh(script: "sudo netstat -tuln | grep ${port}", returnStatus: true).status == 0
+            
+            if (portInUse) {
+                // Get the PID of the process using the port
+                def netstatOutput = sh(script: "sudo netstat -tulnp | grep ${port}", returnStdout: true).trim()
+                def pid = (netstatOutput =~ /(\d+)\/java/)[0][1] // Extract PID from netstat output
                 
-                if (portInUse) {
-                    echo "Port ${port} is already in use. Terminating processes using the port..."
-                    // Terminate processes using the port
-                    sh "fuser -k ${port}/tcp"
-                    echo "Processes using port ${port} terminated."
-                }
-            } catch (Exception e) {
-                echo "Error occurred while checking port ${port}: ${e.message}"
-                // You can add additional error handling or log messages here
+                // Print the PID and process details
+                echo "Process using port ${port}: PID=${pid}"
+                
+                // Terminate the process
+                sh "sudo kill ${pid}"
+                echo "Process with PID ${pid} terminated."
             }
 
             // Start the Go application using the selected port
