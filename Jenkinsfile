@@ -38,34 +38,32 @@ pipeline {
         }
 
         stage('Deploy/Run') {
-    steps {
-        script {
-            def port = 8070
-            
-            // Check if the port is already in use
-            def portInUse = sh(script: "sudo netstat -tuln | grep ${port}", returnStatus: true).status == 0
-            
-            if (portInUse) {
-                // Get the PID of the process using the port
-                def netstatOutput = sh(script: "sudo netstat -tulnp | grep ${port}", returnStdout: true).trim()
-                def pid = (netstatOutput =~ /(\d+)\/java/)[0][1] // Extract PID from netstat output
-                
-                // Print the PID and process details
-                echo "Process using port ${port}: PID=${pid}"
-                
-                // Terminate the process
-                sh "sudo kill ${pid}"
-                echo "Process with PID ${pid} terminated."
+            steps {
+                script {
+                    def port = 8070
+
+                    // Check if the port is already in use
+                    def portInUse = sh(script: "sudo netstat -tuln | grep ${port}", returnStatus: true).status == 0
+
+                    if (portInUse) {
+                        // Get the PID of the process using the port
+                        def netstatOutput = sh(script: "sudo netstat -tulnp | grep ${port}", returnStdout: true).trim()
+                        def pid = (netstatOutput =~ /(\d+)\/java/)[0][1] // Extract PID from netstat output
+
+                        // Print the PID and process details
+                        echo "Process using port ${port}: PID=${pid}"
+
+                        // Terminate the process
+                        sh "sudo kill ${pid}"
+                        echo "Process with PID ${pid} terminated."
+                    }
+
+                    // Start the Go application using the selected port
+                    echo "Starting the Go application on port ${port}"
+                    sh "nohup go run main.go -port=${port} > output.log 2>&1 &"
+                }
             }
-
-            // Start the Go application using the selected port
-            echo "Starting the Go application on port ${port}"
-            sh "nohup go run main.go -port=${port} > output.log 2>&1 &"
         }
-    }
-}
-
-
     }
 }
 
