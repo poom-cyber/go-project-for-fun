@@ -38,26 +38,32 @@ pipeline {
         }
 
         stage('Deploy/Run') {
-            steps {
-                script {
-                    def port = 8070 // Specify the port your Go application should use
+    steps {
+        script {
+            def port = 8070 // Specify the port your Go application should use
 
-                    // Check if the port is already in use
-                    def portInUse = sh(script: "netstat -tuln | grep ${port}", returnStatus: true).status == 0
-
-                    if (portInUse) {
-                        echo "Port ${port} is already in use. Terminating processes using the port..."
-                        // Terminate processes using the port
-                        sh "fuser -k ${port}/tcp"
-                        echo "Processes using port ${port} terminated."
-                    }
-
-                    // Start the Go application using the selected port
-                    echo "Starting the Go application on port ${port}"
-                    sh "nohup go run main.go -port=${port} > output.log 2>&1 &"
+            // Check if the port is already in use
+            try {
+                def portInUse = sh(script: "netstat -tuln | grep ${port}", returnStatus: true).status == 0
+                
+                if (portInUse) {
+                    echo "Port ${port} is already in use. Terminating processes using the port..."
+                    // Terminate processes using the port
+                    sh "fuser -k ${port}/tcp"
+                    echo "Processes using port ${port} terminated."
                 }
+            } catch (Exception e) {
+                echo "Error occurred while checking port ${port}: ${e.message}"
+                // You can add additional error handling or log messages here
             }
+
+            // Start the Go application using the selected port
+            echo "Starting the Go application on port ${port}"
+            sh "nohup go run main.go -port=${port} > output.log 2>&1 &"
         }
+    }
+}
+
 
     }
 }
