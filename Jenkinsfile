@@ -43,7 +43,8 @@ pipeline {
                     def port = 8070
 
                     // Check if the port is already in use
-                    def portInUse = sh(script: "sudo netstat -tuln | grep ${port}", returnStatus: true).status == 0
+                    def portInUse = sh(script: "sudo netstat -tuln | grep ${port}", returnStdout: true).trim().isEmpty()
+
 
                     if (portInUse) {
                         // Get the PID of the process using the port
