@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Checkout source code from Git repository
-                git 'https://github.com/poom-cyber/go-project-for-fun.git'
+                // git 'https://github.com/poom-cyber/go-project-for-fun.git'
                 
                 // Build Golang application
                 sh 'go build -o main .'
