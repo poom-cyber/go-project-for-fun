@@ -1,74 +1,28 @@
 pipeline {
     agent any
-
-    tools {
-        go 'go1.21.4'
-    }
-
+    
     stages {
-        stage('Check Environment') {
-            steps {
-                script {
-                    if (isRunningInsideDocker()) {
-                        echo 'Running inside a Docker container'
-                        // Perform actions specific to Docker environment
-                    } else {
-                        echo 'Not running inside a Docker container'
-                        // Perform actions specific to non-Docker environment
-                    }
-                }
-            }
-        }
         stage('Build') {
             steps {
-                sh 'pwd'
-                sh 'ls -l'
-                echo 'Building the Go application'
-                sh 'go build -o goservice main.go'
+                // Checkout source code from Git repository
+                git 'https://github.com/your-golang-app-repo.git'
+                
+                // Build Golang application
+                sh 'go build -o main .'
             }
         }
-
-        stage('Unit Testing') {
+        stage('Deploy') {
             steps {
-                sh 'pwd'
-                echo 'Running unit tests'
-                sh 'ls -l'
-                sh 'go test'
-            }
-        }
-
-        stage('Deploy/Run') {
-            steps {
+                // Copy built binary to Golang container
                 script {
-                    def port = 8070
-
-                    // Check if the port is already in use
-                    def portInUse = sh(script: "sudo netstat -tuln | grep ${port}", returnStdout: true).trim().isEmpty()
-
-
-                    if (portInUse) {
-                        // Get the PID of the process using the port
-                        def netstatOutput = sh(script: "sudo netstat -tulnp | grep ${port}", returnStdout: true).trim()
-                        def pid = (netstatOutput =~ /(\d+)\/java/)[0][1] // Extract PID from netstat output
-
-                        // Print the PID and process details
-                        echo "Process using port ${port}: PID=${pid}"
-
-                        // Terminate the process
-                        sh "sudo kill ${pid}"
-                        echo "Process with PID ${pid} terminated."
+                    docker.image('my-golang-app').inside {
+                        sh 'docker cp main golang_container:/app/main'
                     }
-
-                    // Start the Go application using the selected port
-                    echo "Starting the Go application on port ${port}"
-                    sh "nohup go run main.go -port=${port} > output.log 2>&1 &"
                 }
+                
+                // Restart Golang container to apply changes
+                sh 'docker restart golang_container'
             }
         }
     }
-}
-
-def isRunningInsideDocker() {
-    // Check if the HOSTNAME environment variable is set
-    return env.HOSTNAME != null
 }
