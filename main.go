@@ -25,14 +25,6 @@ func Output(w http.ResponseWriter, r *http.Request) {
     fmt.Fprint(w, "Random eieieieieieeiei: ", randomNumbers())
     fmt.Fprint(w, "Random eieieieieieeiei: ", randomNumbers())
 
-
-
-
-
-
-    
-
-
 }
 
 
